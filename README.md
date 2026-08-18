@@ -24,19 +24,15 @@ Nimbus Health grew fast. A nearby industrial park drove up patient volume, and b
 > To: Threat Hunt // On-Shift
 > Re: Nimbus Health // credential exposure follow-up
 >
-> You know this client. Nimbus Health, the outpatient clinic we picked apart back in March. They are back on the board, and this time the shape of the problem is different.
+> Nimbus Health again — the clinic from March. Rapid hiring after a nearby industrial park opened put new starters on shared workstations, access review deferred. A routine credential exposure sweep flagged one new hire: his identity and an old password are already public. Telemetry around the same period shows failed logons against his account, then a success.
 >
-> A nearby industrial park opened. Patient volume went up, and so did billing, HR onboarding, and endpoint support. Nimbus hired across every department at once and put the new starters on the same shared workstations they already had. Growth first, access review later.
+> Work out: how the account was found and targeted · whether the credentials were used, and from where · what happened once someone was on the keyboard · what it reached outside its role, and where that went · what was left behind, and the honest root cause.
 >
-> During a routine credential exposure sweep we flagged one of those new hires. His identity is sitting in public, and so is an old password of his. In the same period, authentication telemetry on one of their machines shows failed logons against that account, then a success.
+> Telemetry is in **law-cyber-range**, MDE tables: DeviceLogonEvents, DeviceProcessEvents, DeviceFileEvents, DeviceEvents. Start outside the SIEM — the earliest answers are in the OSINT artefacts, not the logs.
 >
-> Work out: how the account was found and why it was worth targeting · whether the credentials were actually used, and from where · what happened once someone was on the keyboard · what the account reached outside its role, and where that material went · whether anything was left behind, and the honest root cause.
+> **Bind every query to 25-30 May 2026 and `DeviceName startswith "nh-wks-it-01"`.** Shared workspace: don't drift into March (part one), and don't mistake background brute-force noise for your intruder.
 >
-> Telemetry is in the **law-cyber-range** Sentinel workspace, MDE tables: DeviceLogonEvents, DeviceProcessEvents, DeviceFileEvents, DeviceEvents. This one starts outside the SIEM, though. Some of the earliest answers are not in any log, they are in what the internet already knows about this man. Work the artefacts before you write your first query.
->
-> **Bind every query to 25-30 May 2026, scope to `DeviceName startswith "nh-wks-it-01"` (the device is registered under its FQDN), and filter to the account under review.** Shared workspace, and this time there are three ways to lose yourself. Results running into March belong to part one. A wall of failed logons from dozens of addresses is the open internet hammering the box, not your intruder.
->
-> Section 00 is a gate: confirm workspace, window, and host filter, and acknowledge with **"Nimbus support review ready"** before you begin.
+> Section 00 is a gate. Confirm workspace, window, host filter, and acknowledge with **"Nimbus support review ready"** before you begin.
 >
 > // Hunt Lead, Cyber Range SOC · Nimbus Health series, part two
 
@@ -44,7 +40,7 @@ Nimbus Health grew fast. A nearby industrial park drove up patient volume, and b
 
 ### Live Announcement
 
-> 🔵 **HUNT 12 // ANOTHER DAY, PART TWO // LIVE**
+> 🔵 **HUNT 14 // ANOTHER DAY, PART TWO // LIVE**
 
 > Nimbus Health is back on the board. Growth outpaced access review, and one new hire's identity was sitting in public long before anyone touched a keyboard. This time the first answers aren't in the SIEM at all.
 >
@@ -54,49 +50,33 @@ Nimbus Health grew fast. A nearby industrial park drove up patient volume, and b
 >
 > Difficulty: **Beginner**, with a harder edge
 >
-> Flags: **22 + 2 IR** // gate + 6 phases
+> Flags: **25** // gate + 6 phases
 
 ---
 
-### How To Hunt This [ method, not answers ]
+### How To Hunt This [method, not answers]
 
-A beginner hunt with a harder edge than part one: separating one deliberate intrusion from a very loud background, and proving your negatives instead of assuming them.
+A beginner hunt with a harder edge: separating one deliberate intrusion from a very loud background, and proving your negatives instead of assuming them.
 
-**01** Start outside the SIEM. The first answers are in the artefacts, not the logs. Identity, then exposure, then the machine that was reachable.
+**01** Start outside the SIEM — identity and exposure before logs.
 
-**02** Filter first, every time. May window, single host, one account. Results in March belong to part one. Results on other nh-* hosts are not yours.
+**02** Filter first: May window, single host, one account.
 
-**03** Volume is not signal. Thousands of failures from dozens of addresses is the internet being the internet. Look for the source that is patient, targeted, and eventually succeeds.
+**03** Volume is not signal. Find the source that's patient, targeted, and succeeds.
 
-**04** Mind your anchor. A session opening is not a person starting work. Profile creation and first-run application noise sit in between. Anchor on the first real command.
+**04** Mind your anchor — a session opening isn't a person starting work.
 
-**05** Read strings off the log line. Do not rebuild a group name or a path from what you assume the naming convention is. Copy what is actually there.
+**05** Read strings off the log line, don't assume naming conventions.
 
-**06** Check the role before you call it abuse. The matrix tells you what this account is entitled to. Abuse is what sits outside it.
+**06** Check the role before calling it abuse.
 
-**07** Follow the data out. Not everything leaves over the network in a way you would think to query. Ask yourself what channel was already open.
+**07** Follow the data out — not every exit is a network transfer.
 
-**08** Prove the negatives. Two findings here are things that did not happen. Do not assume them, evidence them, and account for what you did find instead.
-
----
-
-### Hunt Stages [ gate + 6 phases ]
-
-| Phase | Focus |
-|---|---|
-| **00** | Setup gate: confirm the law-cyber-range workspace, the May window, and the `nh-wks-it-01` filter (startswith, not exact match) |
-| **01** | Who they went after, and why: the account, what is public about him, and which exposure actually handed someone a working password |
-| **02** | Getting in: cutting the real attempt out of the noise floor, how the session was established, and where it came from |
-| **03** | First moves on the keyboard: the orientation burst, in order, and the thing inside it that is not the operator at all |
-| **04** | Past the role: enumeration beyond the job, and the material this account had no entitlement to open |
-| **05** | Taking it: staging, compression, and the channel the archive actually left through |
-| **06** | Judgement: what was left behind, where the operator actually sat, and the honest root cause |
-
-> **Note on the absence.** Two of the closing findings are negatives. No persistence. One machine, not two. When a table you expect to be busy comes back quiet, that quiet is data, but only if you can account for what is in there instead. Prove it, do not assume it.
+**08** Prove the negatives, don't assume them.
 
 ---
 
-## 2. Objective
+## 2. Objectives
 
 Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
@@ -131,7 +111,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** A routine credential exposure sweep surfaced one new hire whose details were already circulating publicly. Name the account.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -148,7 +128,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** Before touching a single log, work out what this man does for a living, straight from his own public profile. Give his listed job title.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -157,7 +137,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **Details:** The public professional profile lists IT Support Technician as his job title.
 
-**Source:** [Mason_Reed_Linkedin_Profile.png](assets/OSINT/Mason_Reed_Linkedin_Profile.png)
+<img src="assets/OSINT/Mason_Reed_Linkedin_Profile.png" width="1100">
 
 ---
 
@@ -165,7 +145,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** The same public profile lists a way to reach him outside of work. Give the address.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -174,7 +154,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **Details:** The public professional profile lists mason.reed@hotmail.com as the contact address.
 
-**Source:** [Mason_Reed_Linkedin_Profile.png](assets/OSINT/Mason_Reed_Linkedin_Profile.png)
+**Source:** The LinkedIn profile picture above.
 
 ---
 
@@ -182,7 +162,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** A lookup against his personal address turns up more than one historical exposure. Only one of them actually explains why an old password still worked. Name it, and say why it's the one that matters.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -199,7 +179,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** Somewhere in Nimbus's own internal documentation sits the address an outsider would need to actually reach this machine for remote support. Give it.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -216,7 +196,7 @@ Work Nimbus Health's second incident end to end, starting outside the SIEM:
 
 **What to find:** The workstation is under constant background noise from the open internet. Cut through it and find the one source that's patient, targeted, and eventually gets in.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -244,7 +224,7 @@ DeviceLogonEvents
 
 **What to find:** That successful session isn't someone sitting at the desk. Give the logon type.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -261,7 +241,7 @@ DeviceLogonEvents
 
 **What to find:** The account doesn't stay on one address for the whole engagement. Give the second external source it's used from.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -278,7 +258,7 @@ DeviceLogonEvents
 
 **What to find:** Once the session opens, there's a stretch of platform noise before real hands-on-keyboard activity starts. Lay out the sequence, in order, and be able to tell the operator's own orientation commands apart from Windows' own housekeeping.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -306,7 +286,7 @@ DeviceProcessEvents
 
 **What to find:** Sort by time and a deletion jumps out early. Work out whether that's the operator covering tracks, or something else entirely, and say what actually triggered it.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -334,7 +314,7 @@ DeviceProcessEvents
 
 **What to find:** Past the noise, the operator checks what one particular server has to offer. Give the exact command.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -367,7 +347,7 @@ DeviceProcessEvents
 
 **What to find:** An IT support account has no obvious reason to care who's in HR. It asks anyway. Give the exact command it ran to find out.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -395,7 +375,7 @@ DeviceProcessEvents
 
 **What to find:** The account reaches into a file that belongs to a department it doesn't support. Name the real file it opened, not the shortcut Windows leaves behind, the file itself.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -422,7 +402,7 @@ DeviceFileEvents
 
 **What to find:** Before anything moved anywhere, it landed in a local staging folder. Give the path.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -439,7 +419,7 @@ DeviceFileEvents
 
 **What to find:** The staged material gets packaged before it leaves. Name the archive.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -456,7 +436,7 @@ DeviceFileEvents
 
 **What to find:** This didn't go out over a cloud upload or a conventional network transfer. It left through a channel that was already open. Name the path it went through.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -473,7 +453,7 @@ DeviceFileEvents
 
 **What to find:** Check whether the operator planted anything to survive a reboot or a logoff. Prove the negative, don't assume it.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -490,7 +470,7 @@ DeviceFileEvents
 
 **What to find:** The file server was named in recon. Work out whether the operator ever actually ran anything there, or only ever reached it a different way.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -507,7 +487,7 @@ DeviceFileEvents
 
 **What to find:** Nimbus will want this filed as a new hire making a mistake with access he shouldn't have had. Give the honest read.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -524,7 +504,7 @@ DeviceFileEvents
 
 **What to find:** Look at the shape of the failed attempts right before the successful logon. Characterise it, and say what that shape tells you about how the password was obtained.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -552,7 +532,7 @@ DeviceLogonEvents
 
 **What to find:** There's a ten-minute-odd gap in the account's activity. Explain it, what changed, and when.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -581,7 +561,7 @@ DeviceLogonEvents
 
 **What to find:** Before the archive actually left, the operator checked that the destination was there. Give the command.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -611,7 +591,7 @@ DeviceProcessEvents
 
 **What to find:** With an active RDP session on a compromised account, work out the first containment step, and why the obvious fix isn't enough on its own.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
@@ -626,7 +606,7 @@ DeviceProcessEvents
 
 **What to find:** Determine whether this incident carries a regulatory disclosure obligation, and what specifically triggers it.
 
-**Flag Data Block**
+
 
 | Field | Value |
 |---|---|
