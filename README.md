@@ -460,8 +460,6 @@ DeviceFileEvents
 | **Answer** | No persistence was established by the operator; the scheduled tasks, services, and autoruns found belong to the platform |
 | **Time (UTC)** | N/A |
 
-**Details:** No operator-established persistence was identified. The scheduled tasks, services, and autorun entries found on the host were platform-related rather than persistence mechanisms established by the operator.
-
 **Source:** DeviceProcessEvents, DeviceRegistryEvents
 
 ---
@@ -470,14 +468,10 @@ DeviceFileEvents
 
 **What to find:** The file server was named in recon. Work out whether the operator ever actually ran anything there, or only ever reached it a different way.
 
-
-
 | Field | Value |
 |---|---|
 | **Answer** | No, the account never ran anything on the file server; the material was reached through a shared folder |
 | **Time (UTC)** | N/A |
-
-**Details:** The account did not run anything on the file server. The HR material was reached through a shared folder from the IT workstation, as supported by Flags 12 and 13.
 
 **Source:** Flags 12 and 13
 
@@ -488,13 +482,10 @@ DeviceFileEvents
 **What to find:** Nimbus will want this filed as a new hire making a mistake with access he shouldn't have had. Give the honest read.
 
 
-
 | Field | Value |
 |---|---|
 | **Answer** | The m.reed account was compromised and driven by an intruder using valid credentials from a remote public IP address. No malware was found, and there was no exploitation; the evidence therefore does not support malware or a routine insider mistake. |
 | **Time (UTC)** | N/A |
-
-**Details:** The m.reed account was compromised and driven by an intruder using valid credentials from a remote public IP address. No malware was found, and there was no exploitation; the evidence therefore does not support malware or a routine insider mistake.
 
 **Query:** N/A, synthesis across OSINT artefacts, DeviceLogonEvents, DeviceProcessEvents, and DeviceFileEvents
 
@@ -598,8 +589,6 @@ DeviceProcessEvents
 | **Answer** | The first containment action is to temporarily disable the account. A password reset is not enough because an RDP session is open which means the account is fully accessible. |
 | **Time (UTC)** | N/A |
 
-**Details:** The first containment action is to temporarily disable the account. A password reset is not enough because an RDP session is open which means the account is fully accessible.
-
 ---
 
 ### 🚨 IR2: The Disclosure Question
@@ -612,8 +601,6 @@ DeviceProcessEvents
 |---|---|
 | **Answer** | Personal data from a personnel record was exfiltrated, triggering a data breach notification obligation. |
 | **Time (UTC)** | N/A |
-
-**Details:** Personal data from a personnel record was exfiltrated, triggering a data breach notification obligation.
 
 ---
 
