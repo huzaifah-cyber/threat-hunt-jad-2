@@ -619,14 +619,8 @@ DeviceProcessEvents
 
 ## 🛡️ Security Recommendations
 
-1. **Screen new hires for public credential exposure before provisioning access:** Run identity and breach-exposure checks (LinkedIn footprint, HaveIBeenPwned-style lookups) as part of onboarding, especially where employees are placed on shared, pre-existing workstations rather than freshly provisioned ones.
+1. **Close the exposure window at onboarding:** Screen new hires for public credential exposure (LinkedIn footprint, breach lookups) before provisioning access, and retire or rotate credentials before reusing shared workstations rather than treating "growth first, access review later" as acceptable risk.
 
-2. **Alert on targeted low-volume logon success, not just high-volume failure:** A handful of failed attempts against one account from a single address, followed by success, is a different signal from the constant background brute-force noise a public-facing box normally absorbs. Tune detections to catch the former inside the latter.
+2. **Tune detection to targeted success, not just volume:** A handful of failed attempts from one address followed by success is a different signal from background brute-force noise. Pair this with confirming hands-on-keyboard activity per host — a server named in recon isn't a server that was worked on, and true negatives need evidencing too.
 
-3. **Enforce role-based access on file shares, not just domain membership:** An IT support account querying an HR security group, and then opening an HR access-request file, should generate a detection. Role matrices need to be reflected in share ACLs, not left as documentation.
-
-4. **Monitor RDP client-drive redirection as an exfiltration channel:** Archives written to `\tsclient\...` leave through the remote session itself and bypass conventional network-based DLP and egress monitoring. Disable client drive redirection where remote support sessions don't require it, or monitor it explicitly.
-
-5. **Confirm hands-on-keyboard activity per host, don't assume it from recon alone:** A server named in `net view` is not the same as a server that was worked on. Evidence what did and did not happen on every host reached, including true negatives.
-
-6. **Retire or rotate credentials before repurposing shared workstations:** Reused desks and stale passwords on newly onboarded accounts are a predictable target. Treat "growth first, access review later" as a known risk window and close it deliberately, not retroactively.
+3. **Enforce access boundaries and watch the channels that bypass them:** Role matrices need to be reflected in actual share ACLs, not left as documentation, and RDP client-drive redirection (`\tsclient\...`) should be disabled or monitored as an exfiltration path that skips conventional DLP.
