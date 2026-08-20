@@ -12,7 +12,7 @@
 
 ## 1. Complete Scenario
 
-### ☠️ Short Summary
+### Short Summary
 
 Nimbus Health grew fast. A nearby industrial park drove up patient volume, and billing, HR, and IT support all hired at once, onto shared workstations, with access review left for later. A routine credential exposure sweep flagged one of those new starters, an IT support technician whose identity and an old password were already sitting in public breach data. Days later, authentication telemetry on his workstation showed a short, targeted run of failed logons from a single external address, then a success. From there the operator ran a native orientation burst, sat through Windows' and OneDrive's own housekeeping noise, enumerated the file server and the HR group, and reached into an access-request file that belonged to HR, not IT. The material was staged locally, zipped, and pushed out through the RDP client's own mapped drive rather than any conventional upload. No persistence was left behind, and the file server itself was never touched directly, only reached through a share. Overall, this was **OSINT-enabled credential reuse, valid-account compromise, discovery, and cross-department collection**, again carried out entirely with living-off-the-land tooling and an already-open remote session.
 
